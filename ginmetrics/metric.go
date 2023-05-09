@@ -51,6 +51,19 @@ func (m *Metric) Inc(labelValues []string) error {
 	}
 	return nil
 }
+// Dec decreases value for Gauge type metric, decrements
+// the counter by 1
+func (m *Metric) Dec(labelValues []string) error {
+	if m.Type == None {
+		return errors.Errorf("metric '%s' not existed.", m.Name)
+	}
+
+	if m.Type != Gauge {
+		return errors.Errorf("metric '%s' not Gauge type", m.Name)
+	}
+	m.vec.(*prometheus.GaugeVec).WithLabelValues(labelValues...).Dec()
+	return nil
+}
 
 // Add adds the given value to the Metric object. Only
 // for Counter/Gauge type metric.
